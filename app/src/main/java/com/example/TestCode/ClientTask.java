@@ -6,11 +6,8 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.Socket;
 
 class ClientTask extends Thread {
@@ -18,9 +15,9 @@ class ClientTask extends Thread {
     private BufferedReader input;
     private PrintWriter output;
     private String hostAddress;
-    private Activity activity;
+    private Test_Activity activity;
 
-    public ClientTask(String hostAddress, Activity activity) {
+    public ClientTask(String hostAddress, Test_Activity activity) {
         this.hostAddress = hostAddress;
         this.activity = activity;
     }
@@ -35,14 +32,27 @@ class ClientTask extends Thread {
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(socket.getOutputStream(), true);
 
-//            String message;
-//            while ((message = input.readLine()) != null) {
-//                // Process the received message and update UI
-//                activity.runOnUiThread(() -> updateChatUI(message));
-//            }
+            // Listen for incoming messages
+            String message;
+            while ((message = input.readLine()) != null) {
+                // Update UI on the main thread when a message is received
+                final String receivedMessage = message;
+                activity.runOnUiThread(() -> updateChatUI(receivedMessage));
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
+            // Optionally, notify the user via UI in case of connection failure
+            activity.runOnUiThread(() -> Toast.makeText(activity, "Connection failed", Toast.LENGTH_SHORT).show());
+        } finally {
+            // Close the socket and streams when finished
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -53,9 +63,9 @@ class ClientTask extends Thread {
         }
     }
 
-    // Call this to update the chat UI
+    // Method to update the chat UI
     private void updateChatUI(String message) {
         // Update your ListView or TextView here with the received message
-
+        activity.updateUI(message);
     }
 }

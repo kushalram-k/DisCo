@@ -170,6 +170,7 @@ public class Test_Activity extends AppCompatActivity {
                 public void onSuccess() {
                     // Discovery initiated successfully
                     Toast.makeText(Test_Activity.this, "Peer discovery initiated", Toast.LENGTH_SHORT).show();
+                    connect();
                 }
 
                 @Override
@@ -185,27 +186,30 @@ public class Test_Activity extends AppCompatActivity {
 
     public void connect() {
         // Picking the first device found on the network.
-        WifiP2pDevice device = peers.get(0);
+        if(!peers.isEmpty()) {
+            WifiP2pDevice device = peers.get(0);
 
-        WifiP2pConfig config = new WifiP2pConfig();
-        config.deviceAddress = device.deviceAddress;
-        config.wps.setup = WpsInfo.PBC;
+            WifiP2pConfig config = new WifiP2pConfig();
+            config.deviceAddress = device.deviceAddress;
+            config.wps.setup = WpsInfo.PBC;
+            Toast.makeText(this, "connection try", Toast.LENGTH_SHORT).show();
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.NEARBY_WIFI_DEVICES) != PackageManager.PERMISSION_GRANTED) {
-            mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.NEARBY_WIFI_DEVICES) != PackageManager.PERMISSION_GRANTED) {
+                mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
 
-                @Override
-                public void onSuccess() {
-                    // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
-                    Toast.makeText(Test_Activity.this, "Connection initiated", Toast.LENGTH_SHORT).show();
-                }
+                    @Override
+                    public void onSuccess() {
+                        // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
+                        Toast.makeText(Test_Activity.this, "Connection initiated", Toast.LENGTH_SHORT).show();
+                    }
 
-                @Override
-                public void onFailure(int reason) {
-                    Toast.makeText(Test_Activity.this, "Connect failed. Retry.",
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
+                    @Override
+                    public void onFailure(int reason) {
+                        Toast.makeText(Test_Activity.this, "Connect failed. Retry.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         }
     }
 
