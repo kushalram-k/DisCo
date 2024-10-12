@@ -56,5 +56,6 @@ class ClientTask extends Thread {
     // Call this to update the chat UI
     private void updateChatUI(String message) {
         // Update your ListView or TextView here with the received message
+
     }
 }

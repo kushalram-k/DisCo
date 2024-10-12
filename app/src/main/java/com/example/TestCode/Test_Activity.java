@@ -211,8 +211,12 @@ public class Test_Activity extends AppCompatActivity {
 
     private void sendMessage(){
 
-        //kal ise pura karunga 
 
+
+    }
+
+    public void updateUI(String msg){
+        textBox.setText(msg);
     }
 
     WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
