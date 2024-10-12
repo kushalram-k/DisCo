@@ -104,4 +104,14 @@
         app:layout_constraintTop_toTopOf="@+id/imageView2"
         app:layout_constraintVertical_bias="0.873" />
 
+    <TextView
+        android:id="@+id/textView_test_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:foregroundTint="#FFFFFF"
+        android:text="Test Page"
+        android:textColor="#0578D3"
+        tools:layout_editor_absoluteX="336dp"
+        tools:layout_editor_absoluteY="13dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

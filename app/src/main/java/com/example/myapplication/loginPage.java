@@ -12,9 +12,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.TestCode.Test_Activity;
+
 public class loginPage extends AppCompatActivity {
     TextView tv6;
+    TextView testPage;
     Button signInBtn;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +41,15 @@ public class loginPage extends AppCompatActivity {
             public void onClick(View v) {
                 // Launch OTP page activity
                 Intent intent = new Intent(loginPage.this, mainPage.class);
+                startActivity(intent);
+            }
+        });
+
+        testPage = findViewById(R.id.textView_test_page);
+        testPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(loginPage.this, Test_Activity.class);
                 startActivity(intent);
             }
         });
