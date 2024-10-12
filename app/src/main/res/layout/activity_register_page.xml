@@ -44,8 +44,8 @@
         android:layout_height="47dp"
         android:background="@drawable/edittext_border"
         android:ems="10"
-        android:hint="Phone Number"
-        android:inputType="number"
+        android:hint="Email Address"
+        android:inputType="textEmailAddress"
         android:padding="13dp"
         android:paddingStart="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -109,7 +109,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/editTextText5"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/loginnumbericon" />
+        app:srcCompat="@drawable/baseline_email_24" />
 
     <ImageView
         android:id="@+id/imageView7"
