@@ -131,6 +131,9 @@ public class Test_Activity extends AppCompatActivity {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.NEARBY_WIFI_DEVICES) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.NEARBY_WIFI_DEVICES}, NEARBY_WIFI_DEVICES_PERMISSION_REQUEST_CODE);
             }
+            else{
+                discover();
+            }
         }
 
 
@@ -230,6 +233,7 @@ public class Test_Activity extends AppCompatActivity {
 
             if (info.groupFormed && info.isGroupOwner) {
                 // This device is the group owner, act as server
+                Toast.makeText(getApplicationContext(),"sending message",Toast.LENGTH_SHORT);
                 new ServerTask().start(); // Start a thread to handle server-side communication
             } else if (info.groupFormed) {
                 // This device is a client, connect to the group owner
