@@ -1,4 +1,4 @@
-package com.example.disco;
+package com.example.myapplication;
 
 import android.os.Bundle;
 
