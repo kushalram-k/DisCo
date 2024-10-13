@@ -71,6 +71,7 @@ public class loginPage extends AppCompatActivity {
                     } else {
                         Toast.makeText(this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
+
                 });
 
     }
