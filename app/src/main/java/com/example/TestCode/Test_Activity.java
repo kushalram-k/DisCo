@@ -11,8 +11,10 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -33,13 +35,13 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.myapplication.R;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
+
 
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Test_Activity extends AppCompatActivity {
+public class Test_Activity extends AppCompatActivity implements ClientTask.OnMessageReceivedListener {
 
     WifiManager wifimanager;
     WifiP2pManager mManager;
@@ -47,10 +49,17 @@ public class Test_Activity extends AppCompatActivity {
     BroadcastReceiver mReceiver;
     IntentFilter mIntentFilter;
 
+    ServerTask serverTask;
+    ClientTask clientTask;
+    private Handler uiHandler;
+
+
+
     ListView peerList;
     Button searchButton;
     Button sendButton;
-    TextInputEditText textBox;
+    TextInputEditText textInput;
+    TextView receiverBox;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 101;
@@ -68,7 +77,7 @@ public class Test_Activity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_test);
 
-
+        init();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -81,7 +90,7 @@ public class Test_Activity extends AppCompatActivity {
     protected void onStart(){
         super.onStart();
 
-        init();
+
     }
 
     void init(){
@@ -92,21 +101,23 @@ public class Test_Activity extends AppCompatActivity {
 
         peerList = findViewById(R.id.peer_list);
         searchButton = findViewById(R.id.button_find);
-        textBox = findViewById(R.id.text_input);
+        textInput = findViewById(R.id.text_input);
         sendButton = findViewById(R.id.button_send);
+        receiverBox = findViewById(R.id.receiveBox);
 
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                discover();
-            }
-        });
+        receiverBox.setText("");
+
+        uiHandler = new Handler();
+
+        searchButton.setOnClickListener(v -> discover());
 
         sendButton.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v){
+                Toast.makeText(Test_Activity.this,"sending",Toast.LENGTH_SHORT).show();
                 sendMessage();
+
             }
         });
 
@@ -119,12 +130,18 @@ public class Test_Activity extends AppCompatActivity {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-            } else {
-                // Permissions already granted
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
+
+                // Request permissions
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_WIFI_STATE},
+                        LOCATION_PERMISSION_REQUEST_CODE);
+                return; // Exit the method
+            }else{
                 discover();
             }
+
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -178,12 +195,37 @@ public class Test_Activity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(int reasonCode) {
-                    Toast.makeText(Test_Activity.this, "Peer discovery failed", Toast.LENGTH_SHORT).show();
+                    String failureMessage;
+                    switch (reasonCode) {
+                        case WifiP2pManager.P2P_UNSUPPORTED:
+                            failureMessage = "Wi-Fi Direct is not supported on this device.";
+                            break;
+                        case WifiP2pManager.ERROR:
+                            failureMessage = "An internal error occurred.";
+                            break;
+                        case WifiP2pManager.BUSY:
+                            failureMessage = "The system is busy, please try again.";
+                            break;
+                        default:
+                            failureMessage = "Unknown error occurred: " + reasonCode;
+                            break;
+                    }
+                    Toast.makeText(Test_Activity.this, "Peer discovery failed: " + failureMessage, Toast.LENGTH_SHORT).show();
+
                 }
             });
         } else {
             Log.d("Tag", "Permission Denied. Cannot discover peers.");
         }
+    }
+
+    @Override
+    public void onMessageReceived(String message) {
+        // Update the UI when a message is received
+        Toast.makeText(Test_Activity.this,"received",Toast.LENGTH_SHORT).show();
+        runOnUiThread(() -> {
+            receiverBox.setText(message);
+        });
     }
 
 
@@ -203,7 +245,8 @@ public class Test_Activity extends AppCompatActivity {
                     @Override
                     public void onSuccess() {
                         // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
-                        Toast.makeText(Test_Activity.this, "Connection initiated", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Test_Activity.this, "Connection established", Toast.LENGTH_SHORT).show();
+
                     }
 
                     @Override
@@ -216,14 +259,36 @@ public class Test_Activity extends AppCompatActivity {
         }
     }
 
-    private void sendMessage(){
+    private void sendMessage() {
+        String message = textInput.getText().toString();
 
-
-
+        if (serverTask != null) {
+            new SendMessageTask(serverTask, message).execute();
+        } else if (clientTask != null) {
+            new SendMessageTask(clientTask, message).execute();
+        } else {
+            Toast.makeText(Test_Activity.this, "Connection not established", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    public void updateUI(String msg){
-        textBox.setText(msg);
+    private static class SendMessageTask extends AsyncTask<Void, Void, Void> {
+        private Object task; // Can be ServerTask or ClientTask
+        private String message;
+
+        SendMessageTask(Object task, String message) {
+            this.task = task;
+            this.message = message;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            if (task instanceof ServerTask) {
+                ((ServerTask) task).sendMessage(message);
+            } else if (task instanceof ClientTask) {
+                ((ClientTask) task).sendMessage(message);
+            }
+            return null;
+        }
     }
 
     WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
@@ -233,14 +298,38 @@ public class Test_Activity extends AppCompatActivity {
 
             if (info.groupFormed && info.isGroupOwner) {
                 // This device is the group owner, act as server
-                Toast.makeText(getApplicationContext(),"sending message",Toast.LENGTH_SHORT);
-                new ServerTask().start(); // Start a thread to handle server-side communication
+                Toast.makeText(getApplicationContext(), "Acting as server", Toast.LENGTH_SHORT).show();
+                Log.d("ConnectionInfo", "Device is the group owner");
+
+                // Create and start the ServerTask, and store the reference
+                serverTask = new ServerTask(message -> {
+                    // Update the UI with the received message from the client
+                    runOnUiThread(() -> {
+                        Log.d("ServerTask", "Message received: " + message);
+                        receiverBox.setText(message);
+                    });
+                }, uiHandler);
+                serverTask.start(); // Start the server task
+
             } else if (info.groupFormed) {
                 // This device is a client, connect to the group owner
-                new ClientTask(groupOwnerAddress.getHostAddress(),Test_Activity.this).start(); // Connect to the group owner
+                Toast.makeText(getApplicationContext(), "Acting as client", Toast.LENGTH_SHORT).show();
+                Log.d("ConnectionInfo", "Device is a client, connecting to group owner: " + groupOwnerAddress.getHostAddress());
+
+                // Create and start the ClientTask, and store the reference
+                clientTask = new ClientTask(groupOwnerAddress.getHostAddress(), message -> {
+                    // Update the UI with the received message from the server
+                    runOnUiThread(() -> {
+                        Log.d("ClientTask", "Message received: " + message);
+                        receiverBox.setText(message);
+                    });
+                }, uiHandler);
+                clientTask.start(); // Start the client task
             }
         }
     };
+
+
 
 
     WifiP2pManager.PeerListListener peerListListener=new WifiP2pManager.PeerListListener() {
@@ -263,17 +352,14 @@ public class Test_Activity extends AppCompatActivity {
             }
 
             // Updating the ListView on the UI thread
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(Test_Activity.this, android.R.layout.simple_list_item_1, deviceNameArray);
-                    peerList.setAdapter(adapter);
-                }
+            runOnUiThread(() -> {
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(Test_Activity.this, android.R.layout.simple_list_item_1, deviceNameArray);
+                peerList.setAdapter(adapter);
             });
 
             if(peers.isEmpty()){
                 Toast.makeText(Test_Activity.this, "No peer found", Toast.LENGTH_SHORT).show();
-                return;
+
             }
         }
     };

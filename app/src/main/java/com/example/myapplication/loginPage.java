@@ -14,6 +14,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.TestCode.Test_Activity;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class loginPage extends AppCompatActivity {
@@ -21,6 +22,7 @@ public class loginPage extends AppCompatActivity {
     Button signInBtn;
     EditText emailEditText, passwordEditText;
     FirebaseAuth auth; // Firebase Authentication instance
+    TextView testPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +32,14 @@ public class loginPage extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         emailEditText = findViewById(R.id.editTextText2);
         passwordEditText = findViewById(R.id.editTextText3);
+        testPage = findViewById(R.id.textView_test_page);
+        testPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(loginPage.this, Test_Activity.class);
+                startActivity(intent);
+            }
+        });
         tv6=findViewById(R.id.textView6);
         tv6.setOnClickListener(new View.OnClickListener(){
             @Override
