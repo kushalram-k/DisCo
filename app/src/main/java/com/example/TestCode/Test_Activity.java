@@ -232,7 +232,7 @@ public class Test_Activity extends AppCompatActivity implements ClientTask.OnMes
     public void connect() {
         // Picking the first device found on the network.
         if(!peers.isEmpty()) {
-            WifiP2pDevice device = peers.get(0);
+            WifiP2pDevice device = peers.get(1);
 
             WifiP2pConfig config = new WifiP2pConfig();
             config.deviceAddress = device.deviceAddress;
