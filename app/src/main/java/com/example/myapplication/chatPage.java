@@ -4,11 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -19,15 +23,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 
-public class chatPage extends AppCompatActivity {
+public class chatPage extends AppCompatActivity implements MessageListener{
     private EditText chatMessageInput;
+    private ServerTask serverTask;
     private ImageButton sendButton;
     private RecyclerView chatRecyclerView;
     private ChatAdapter chatAdapter;
     TextView groupName;
     private ArrayList<ChatMessage> chatMessages;  // Use ChatMessage instead of String
 //    private Networkservice networkService;  // Add a NetworkService object
-
+    private Handler uihandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +42,10 @@ public class chatPage extends AppCompatActivity {
         chatMessageInput = findViewById(R.id.chat_message_input);
         sendButton = findViewById(R.id.message_send_btn);
         chatRecyclerView = findViewById(R.id.chat_recycler_view);
+
+//        uihandler = new Handler();
+
+        ((MyApplication) getApplication()).setMessageListener(this);
 
 
         // Initialize the chat messages list and adapter
@@ -60,7 +69,13 @@ public class chatPage extends AppCompatActivity {
 
                 //send message using Networkservice
 //                    networkService.sendMessage(messageText);  // Trigger sendMessage in NetworkService
-
+                    ClientTask clientTask = ClientTaskHolder.getClientTask();
+                    if(clientTask != null){
+                        clientTask.sendMessage(messageText);
+                    }
+                    else{
+                        Log.e("ChatPage","ClientTask is null");
+                    }
                 }
             }
         });
@@ -82,4 +97,17 @@ public class chatPage extends AppCompatActivity {
 
 
     }
+
+    @Override
+    public void onMessageReceived(final String message){
+        //This method is called when a new message is received
+        long currentTime1 = System.currentTimeMillis();
+        runOnUiThread(() ->{
+            ChatMessage incomingMessage = new ChatMessage(message, currentTime1, false);  // 'false' indicates it's not sent by the user
+            chatMessages.add(incomingMessage);
+            chatAdapter.notifyItemInserted(chatMessages.size() - 1);
+            chatRecyclerView.scrollToPosition(chatMessages.size() - 1);
+        });
+    }
+
 }

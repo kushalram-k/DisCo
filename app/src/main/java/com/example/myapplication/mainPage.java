@@ -48,7 +48,7 @@ public class mainPage extends AppCompatActivity {
     List<WifiP2pDevice> peers = new ArrayList<>();
     String[] deviceNameArray;
     WifiP2pDevice[] deviceArray;
-    ServerTask serverTask;
+    public ServerTask serverTask;
     ClientTask clientTask;
     SendReceive sendReceive;
     Handler handler;
@@ -95,6 +95,11 @@ public class mainPage extends AppCompatActivity {
             return true;
         });
     }
+
+    public ServerTask getServerTask() {
+        return serverTask;
+    }
+
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager=getSupportFragmentManager();
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
@@ -228,11 +233,12 @@ public class mainPage extends AppCompatActivity {
         public void onConnectionInfoAvailable(WifiP2pInfo info) {
             if (info.groupFormed && info.isGroupOwner) {
 
-                serverTask = new ServerTask(handler);
+                serverTask = new ServerTask(handler, (MyApplication) getApplication());
                 serverTask.start();
             } else if (info.groupFormed) {
 
-                clientTask = new ClientTask(info.groupOwnerAddress,handler);
+                clientTask = new ClientTask(info.groupOwnerAddress,handler,(MyApplication) getApplication());
+                ClientTaskHolder.setClientTask(clientTask);
                 clientTask.start();
             }
         }

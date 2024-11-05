@@ -13,9 +13,10 @@ public class ServerTask extends Thread {
     ServerSocket serverSocket;
     SendReceive sendReceive;
     private Handler handler;
-
-    public ServerTask(Handler handler){
+    private MyApplication app;
+    public ServerTask(Handler handler, MyApplication app){
         this.handler = handler;
+        this.app = app;
     }
 
     @Override
@@ -23,7 +24,7 @@ public class ServerTask extends Thread {
         try {
             serverSocket = new ServerSocket(8888);
             Socket socket = serverSocket.accept();
-            sendReceive = new SendReceive(socket,handler);
+            sendReceive = new SendReceive(socket,handler,app);
             sendReceive.start();
         } catch (IOException e) {
             e.printStackTrace();

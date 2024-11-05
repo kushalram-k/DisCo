@@ -23,9 +23,11 @@ public class ClientTask extends Thread {
     InetAddress hostAddress;
     Handler handler;
     SendReceive sendReceive;
-    public ClientTask(InetAddress hostAddress,Handler handler) {
+    private MyApplication app;
+    public ClientTask(InetAddress hostAddress,Handler handler,MyApplication app) {
         this.hostAddress = hostAddress;
         this.handler = handler;
+        this.app = app;
     }
 
     @Override
@@ -33,7 +35,7 @@ public class ClientTask extends Thread {
         try {
             socket = new Socket();
             socket.connect(new InetSocketAddress(hostAddress, 8888), 5000);
-            sendReceive = new SendReceive(socket,handler);
+            sendReceive = new SendReceive(socket,handler,app);
             sendReceive.start();
         } catch (IOException e) {
             e.printStackTrace();

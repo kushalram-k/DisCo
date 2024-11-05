@@ -12,10 +12,12 @@ public class SendReceive extends Thread {
     private InputStream inputStream;
     private OutputStream outputStream;
     private Handler handler;
+    private MyApplication app;
 
-    public SendReceive(Socket skt, Handler handler) {
+    public SendReceive(Socket skt, Handler handler,MyApplication app) {
         socket = skt;
         this.handler = handler;
+        this.app = app;
         try {
             inputStream = socket.getInputStream();
             outputStream = socket.getOutputStream();
@@ -33,7 +35,13 @@ public class SendReceive extends Thread {
             try {
                 bytes = inputStream.read(buffer);
                 if (bytes > 0) {
-                    handler.obtainMessage(1, bytes, -1, buffer).sendToTarget();
+                    String message = new String(buffer,0,bytes);
+
+                    //Update UI in chatPage
+                    MessageListener listener = app.getMessageListener();
+                    if(listener != null){
+                        listener.onMessageReceived(message);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -53,5 +61,9 @@ public class SendReceive extends Thread {
                 }
             }
         }).start();
+    }
+
+    public interface onMessageReceivedListener{
+        void onMessageReceived(String message,long timestamp);
     }
 }
