@@ -17,7 +17,7 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
-    private Networkservice service;
+    private mainPage service;
     WifiP2pManager.PeerListListener myPeerListListener;
 
     public WifiDirectBroadcastReceiver(){
@@ -28,7 +28,7 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
     }
 
     public WifiDirectBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel,
-                                       Networkservice service) {
+                                       mainPage service) {
         super();
         this.manager = manager;
         this.channel = channel;
@@ -49,6 +49,9 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
             }
         }else if(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)){
             if(manager!=null){
+//                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.NEARBY_WIFI_DEVICES) != PackageManager.PERMISSION_GRANTED) {
+//                    return;
+//                }
                 manager.requestPeers(channel,service.peerListListener);
             }
         }else if(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)){

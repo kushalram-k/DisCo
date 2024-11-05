@@ -117,8 +117,8 @@ public class RequestPermissions extends AppCompatActivity {
 
     private void startWiFiDirectService() {
         // You can start the service again if needed after permission is granted
-        Intent serviceIntent = new Intent(this, Networkservice.class);
-        startService(serviceIntent);
+//        Intent serviceIntent = new Intent(this, Networkservice.class);
+//        startService(serviceIntent);
     }
 }
 

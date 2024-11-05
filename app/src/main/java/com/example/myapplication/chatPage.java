@@ -26,7 +26,7 @@ public class chatPage extends AppCompatActivity {
     private ChatAdapter chatAdapter;
     TextView groupName;
     private ArrayList<ChatMessage> chatMessages;  // Use ChatMessage instead of String
-    private Networkservice networkService;  // Add a NetworkService object
+//    private Networkservice networkService;  // Add a NetworkService object
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
