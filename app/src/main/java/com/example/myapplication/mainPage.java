@@ -1,7 +1,11 @@
 package com.example.myapplication;
 import com.example.myapplication.R;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -18,6 +22,7 @@ import com.example.myapplication.databinding.ActivityMainPageBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class mainPage extends AppCompatActivity {
+    private Button discoverButton;
     @NonNull ActivityMainPageBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +32,19 @@ public class mainPage extends AppCompatActivity {
 
         // Set the content view to the root of the binding
         setContentView(binding.getRoot());
+        Toast.makeText(mainPage.this,"mainPage",Toast.LENGTH_SHORT).show();
+        startService(new Intent(this, Networkservice.class));
+        Intent serviceIntent = new Intent(this, Networkservice.class);
+        startService(serviceIntent);
 
+        discoverButton = findViewById(R.id.discoverButton);
+        discoverButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Networkservice obj = new Networkservice();
+                obj.discover();
+            }
+        });
         // Now you can reference bottomNavigationView correctly
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         replaceFragment(new groupFragment());

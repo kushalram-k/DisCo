@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- A message explaining why permissions are required -->
+    <TextView
+        android:id="@+id/permission_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This app requires location and Wi-Fi permissions to connect via Wi-Fi Direct."
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:gravity="center"
+        android:paddingBottom="16dp" />
+
+    <!-- A button that could prompt the user to proceed with the permission request -->
+    <Button
+        android:id="@+id/request_permissions_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Request Permissions" />
+
+</LinearLayout>

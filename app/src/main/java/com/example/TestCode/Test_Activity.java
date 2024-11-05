@@ -40,8 +40,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class Test_Activity extends AppCompatActivity implements ClientTask.OnMessageReceivedListener {
+public class Test_Activity extends AppCompatActivity implements ClientTask.OnMessageReceivedListener,ServerTask.OnMessageReceivedListener {
 
     WifiManager wifimanager;
     WifiP2pManager mManager;
@@ -62,7 +63,7 @@ public class Test_Activity extends AppCompatActivity implements ClientTask.OnMes
     TextView receiverBox;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 101;
+//    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 101;
     private static final int NEARBY_WIFI_DEVICES_PERMISSION_REQUEST_CODE = 102;
 
 
@@ -228,45 +229,174 @@ public class Test_Activity extends AppCompatActivity implements ClientTask.OnMes
         });
     }
 
+    @Override
+    public void onMessageReceivedFromClient(String message) {
+        // Update the UI when a message is received
+        Toast.makeText(Test_Activity.this,"received",Toast.LENGTH_SHORT).show();
+        runOnUiThread(() -> {
+            receiverBox.setText(message);
+        });
+    }
+
+
+//    public void connect() {
+//        // Picking the first device found on the network.
+//        if(!peers.isEmpty()) {
+//            WifiP2pDevice device = peers.get(0);
+//
+//            WifiP2pConfig config = new WifiP2pConfig();
+//            config.deviceAddress = device.deviceAddress;
+//            config.wps.setup = WpsInfo.PBC;
+//            Toast.makeText(this, "connection try", Toast.LENGTH_SHORT).show();
+//
+//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.NEARBY_WIFI_DEVICES) != PackageManager.PERMISSION_GRANTED) {
+//                mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+//
+//                    @Override
+//                    public void onSuccess() {
+//                        // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
+//                        Toast.makeText(Test_Activity.this, "Connection established", Toast.LENGTH_SHORT).show();
+//
+//                    }
+//
+//                    @Override
+//                    public void onFailure(int reason) {
+//                        Toast.makeText(Test_Activity.this, "Connect failed. Retry.",
+//                                Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//        }
+//    }
+
 
     public void connect() {
-        // Picking the first device found on the network.
-        if(!peers.isEmpty()) {
-            WifiP2pDevice device = peers.get(1);
+        // Check if the peer list is not empty
+        if (!peers.isEmpty()) {
+            // Iterate over each device in the peer list
+//            for (WifiP2pDevice device : peers) {
+//               if(!Objects.equals(device.deviceName, "Mohd-Kaif")){
+//                   WifiP2pConfig config = new WifiP2pConfig();
+//                   config.deviceAddress = device.deviceAddress;
+//                   config.wps.setup = WpsInfo.PBC;
+//
+//                   Toast.makeText(this, "Attempting connection to: " + device.deviceName, Toast.LENGTH_SHORT).show();
+//
+//                   // Check for permissions
+//                   if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+//                           ActivityCompat.checkSelfPermission(this, Manifest.permission.NEARBY_WIFI_DEVICES) == PackageManager.PERMISSION_GRANTED) {
+//
+//                       mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+//
+//                           @Override
+//                           public void onSuccess() {
+//                               // Connection successful to this device
+//                               Toast.makeText(Test_Activity.this, "Connected to: " + device.deviceName, Toast.LENGTH_SHORT).show();
+//                               mManager.requestConnectionInfo(mChannel, connectionInfoListener);
+//
+//                               // Stop further attempts after the first successful connection if desired
+//                               // You can return here if you only want to connect to one device at a time
+//                           }
+//
+//                           @Override
+//                           public void onFailure(int reason) {
+//                               // Connection attempt failed for this device
+//                               Toast.makeText(Test_Activity.this, "Connection failed to: " + device.deviceName + ". Retrying next device.", Toast.LENGTH_SHORT).show();
+//                           }
+//                       });
+//
+//                       // Optional: Add a delay between connection attempts if needed (e.g., 2 seconds)
+//                       try {
+//                           Thread.sleep(2000); // 2000ms = 2 seconds
+//                       } catch (InterruptedException e) {
+//                           e.printStackTrace();
+//                       }
+//                   }
+//               }
+//            }
+            for (WifiP2pDevice device : peers) {
+                if (!Objects.equals(device.deviceName, "Mohd-Kaif")) {
+                    WifiP2pConfig config = new WifiP2pConfig();
+                    config.deviceAddress = device.deviceAddress;
+                    config.wps.setup = WpsInfo.PBC;
 
-            WifiP2pConfig config = new WifiP2pConfig();
-            config.deviceAddress = device.deviceAddress;
-            config.wps.setup = WpsInfo.PBC;
-            Toast.makeText(this, "connection try", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Attempting connection to: " + device.deviceName, Toast.LENGTH_SHORT).show();
 
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.NEARBY_WIFI_DEVICES) != PackageManager.PERMISSION_GRANTED) {
-                mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+                    // Check for permissions
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                            ActivityCompat.checkSelfPermission(this, Manifest.permission.NEARBY_WIFI_DEVICES) == PackageManager.PERMISSION_GRANTED) {
 
-                    @Override
-                    public void onSuccess() {
-                        // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
-                        Toast.makeText(Test_Activity.this, "Connection established", Toast.LENGTH_SHORT).show();
+                        // Handler for managing connection timeout
+                        Handler handler = new Handler();
+                        Runnable timeoutRunnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                // Timeout reached, attempt to cancel the connection if not successful
+                                Toast.makeText(Test_Activity.this, "Connection attempt to " + device.deviceName + " timed out.", Toast.LENGTH_SHORT).show();
+                                mManager.cancelConnect(mChannel, new WifiP2pManager.ActionListener() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Toast.makeText(Test_Activity.this, "Cancelled connection attempt to: " + device.deviceName, Toast.LENGTH_SHORT).show();
+                                    }
 
+                                    @Override
+                                    public void onFailure(int reason) {
+                                        Toast.makeText(Test_Activity.this, "Failed to cancel connection attempt to: " + device.deviceName, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        };
+
+                        // Start connection and set timeout
+                        mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+                            @Override
+                            public void onSuccess() {
+                                // Cancel the timeout callback if connection is successful
+                                handler.removeCallbacks(timeoutRunnable);
+                                Toast.makeText(Test_Activity.this, "Connected to: " + device.deviceName, Toast.LENGTH_SHORT).show();
+                                mManager.requestConnectionInfo(mChannel, connectionInfoListener);
+
+                                // Stop further attempts after the first successful connection if desired
+                            }
+
+                            @Override
+                            public void onFailure(int reason) {
+                                // Connection attempt failed for this device
+                                handler.removeCallbacks(timeoutRunnable); // Ensure timeout isn't triggered if it fails quickly
+                                Toast.makeText(Test_Activity.this, "Connection failed to: " + device.deviceName + ". Retrying next device.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        // Set a timeout period for connection attempt (e.g., 10 seconds)
+                        handler.postDelayed(timeoutRunnable, 10000); // 10,000 ms = 10 seconds
+
+                        // Optional: Add a delay between connection attempts if needed (e.g., 2 seconds)
+                        try {
+                            Thread.sleep(2000); // 2000ms = 2 seconds
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-
-                    @Override
-                    public void onFailure(int reason) {
-                        Toast.makeText(Test_Activity.this, "Connect failed. Retry.",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
+                }
             }
+
+        } else {
+            Toast.makeText(this, "No peers found to connect.", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void sendMessage() {
         String message = textInput.getText().toString();
 
         if (serverTask != null) {
+            Log.d("serverTask", "as server");
             new SendMessageTask(serverTask, message).execute();
         } else if (clientTask != null) {
+            Log.d("clientTask", "as client");
             new SendMessageTask(clientTask, message).execute();
         } else {
+            Log.d("failed", "connection not established");
             Toast.makeText(Test_Activity.this, "Connection not established", Toast.LENGTH_SHORT).show();
         }
     }
@@ -291,6 +421,45 @@ public class Test_Activity extends AppCompatActivity implements ClientTask.OnMes
         }
     }
 
+//    WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
+//        @Override
+//        public void onConnectionInfoAvailable(WifiP2pInfo info) {
+//            final InetAddress groupOwnerAddress = info.groupOwnerAddress;
+//
+//            if (info.groupFormed && info.isGroupOwner) {
+//                // This device is the group owner, act as server
+//                Toast.makeText(getApplicationContext(), "Acting as server", Toast.LENGTH_SHORT).show();
+//                Log.d("ConnectionInfo", "Device is the group owner");
+//
+//                // Create and start the ServerTask, and store the reference
+//                serverTask = new ServerTask(message -> {
+//                    // Update the UI with the received message from the client
+//                    runOnUiThread(() -> {
+//                        Log.d("ServerTask", "Message received: " + message);
+//                        Toast.makeText(getApplicationContext(), "received", Toast.LENGTH_SHORT).show();
+//                        receiverBox.setText(message);
+//                    });
+//                }, uiHandler);
+//                serverTask.start(); // Start the server task
+//
+//            } else if (info.groupFormed) {
+//                // This device is a client, connect to the group owner
+//                Toast.makeText(getApplicationContext(), "Acting as client", Toast.LENGTH_SHORT).show();
+//                Log.d("ConnectionInfo", "Device is a client, connecting to group owner: " + groupOwnerAddress.getHostAddress());
+//
+//                // Create and start the ClientTask, and store the reference
+//                clientTask = new ClientTask(groupOwnerAddress.getHostAddress(), message -> {
+//                    // Update the UI with the received message from the server
+//                    runOnUiThread(() -> {
+//                        Log.d("ClientTask", "Message received: " + message);
+//                        receiverBox.setText(message);
+//                    });
+//                }, uiHandler);
+//                clientTask.start(); // Start the client task
+//            }
+//        }
+//    };
+
     WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
         @Override
         public void onConnectionInfoAvailable(WifiP2pInfo info) {
@@ -298,36 +467,47 @@ public class Test_Activity extends AppCompatActivity implements ClientTask.OnMes
 
             if (info.groupFormed && info.isGroupOwner) {
                 // This device is the group owner, act as server
-                Toast.makeText(getApplicationContext(), "Acting as server", Toast.LENGTH_SHORT).show();
-                Log.d("ConnectionInfo", "Device is the group owner");
+                runOnUiThread(() -> {
+                    Toast.makeText(getApplicationContext(), "Acting as server", Toast.LENGTH_SHORT).show();
+                    Log.d("ConnectionInfo", "Device is the group owner");
+                });
 
                 // Create and start the ServerTask, and store the reference
                 serverTask = new ServerTask(message -> {
                     // Update the UI with the received message from the client
                     runOnUiThread(() -> {
                         Log.d("ServerTask", "Message received: " + message);
-                        receiverBox.setText(message);
+                        Toast.makeText(getApplicationContext(), "Message received", Toast.LENGTH_SHORT).show();
+                        if (receiverBox != null) {
+                            receiverBox.setText(message);
+                        }
                     });
                 }, uiHandler);
+                Log.d("ServerTask", "This is first");
                 serverTask.start(); // Start the server task
 
             } else if (info.groupFormed) {
                 // This device is a client, connect to the group owner
-                Toast.makeText(getApplicationContext(), "Acting as client", Toast.LENGTH_SHORT).show();
-                Log.d("ConnectionInfo", "Device is a client, connecting to group owner: " + groupOwnerAddress.getHostAddress());
+                runOnUiThread(() -> {
+                    Toast.makeText(getApplicationContext(), "Acting as client", Toast.LENGTH_SHORT).show();
+                    Log.d("ConnectionInfo", "Device is a client, connecting to group owner: " + groupOwnerAddress.getHostAddress());
+                });
 
                 // Create and start the ClientTask, and store the reference
                 clientTask = new ClientTask(groupOwnerAddress.getHostAddress(), message -> {
                     // Update the UI with the received message from the server
                     runOnUiThread(() -> {
                         Log.d("ClientTask", "Message received: " + message);
-                        receiverBox.setText(message);
+                        if (receiverBox != null) {
+                            receiverBox.setText(message);
+                        }
                     });
                 }, uiHandler);
                 clientTask.start(); // Start the client task
             }
         }
     };
+
 
 
 

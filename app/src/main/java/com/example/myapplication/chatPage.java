@@ -26,6 +26,8 @@ public class chatPage extends AppCompatActivity {
     private ChatAdapter chatAdapter;
     TextView groupName;
     private ArrayList<ChatMessage> chatMessages;  // Use ChatMessage instead of String
+    private Networkservice networkService;  // Add a NetworkService object
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +57,10 @@ public class chatPage extends AppCompatActivity {
                     chatAdapter.notifyItemInserted(chatMessages.size() - 1); // Notify adapter
                     chatRecyclerView.scrollToPosition(chatMessages.size() - 1); // Scroll to the last message
                     chatMessageInput.setText(""); // Clear the input field
+
+                //send message using Networkservice
+//                    networkService.sendMessage(messageText);  // Trigger sendMessage in NetworkService
+
                 }
             }
         });

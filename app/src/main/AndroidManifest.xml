@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions for Wi-Fi and location services -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -10,7 +11,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-
+    <!-- Application definition -->
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -22,19 +23,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
+
+        <!-- Activities -->
         <activity
             android:name="com.example.TestCode.Test_Activity"
             android:exported="false" />
 
-
-        <receiver
-            android:name="com.example.TestCode.WifiDirectBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true" />
-
-        <service
-            android:name="com.example.TestCode.peerConnection"
-            android:enabled="true"
+        <activity
+            android:name=".RequestPermissions"
             android:exported="false" />
 
         <activity
@@ -57,13 +53,27 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".groupFragment" />
         <activity
             android:name=".MainActivity"
+            android:exported="false" />
+
+        <service android:name=".Networkservice" />
+
+
+        <!-- Receiver for Wi-Fi Direct events -->
+        <receiver
+            android:name="com.example.myapplication.WifiDirectBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Service for handling peer connections -->
+        <service
+            android:name="com.example.TestCode.peerConnection"
+            android:enabled="true"
             android:exported="false" />
     </application>
 
