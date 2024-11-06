@@ -11,6 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link personFragment#newInstance} factory method to
@@ -26,6 +30,9 @@ public class personFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private List<String> deviceList;
+    private ArrayAdapter<String> adapter;
+
 
     public personFragment() {
         // Required empty public constructor
@@ -52,6 +59,7 @@ public class personFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        deviceList = new ArrayList<>();
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -68,11 +76,12 @@ public class personFragment extends Fragment {
         ListView listView = view.findViewById(R.id.listViewPersons);
 
         // Create the data for the ListView
-        String[] persons = {"person1", "person2", "person3"};
-
+//        String[] persons = {"person1", "person2", "person3"};
+        ArrayList<String> deviceNames = getArguments() != null ?
+                getArguments().getStringArrayList("deviceNames") : new ArrayList<>();
         // Create an ArrayAdapter and set it on the ListView
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_list_item_1, persons);
+        adapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_list_item_1, deviceList);
         listView.setAdapter(adapter);
 
         // Set an OnItemClickListener on the ListView
@@ -81,5 +90,11 @@ public class personFragment extends Fragment {
         });
         // Return the inflated view
         return view;
+    }
+
+    public void updateDeviceList(String[] newDevices) {
+        deviceList.clear();
+        deviceList.addAll(Arrays.asList(newDevices));
+        adapter.notifyDataSetChanged();
     }
 }

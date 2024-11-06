@@ -40,6 +40,8 @@ public class mainPage extends AppCompatActivity {
     ClientTask clientTask;
     SendReceive sendReceive;
     Handler handler;
+    private personFragment personFrag;
+
 
 
     private static final int CONNECTION_TIMEOUT = 1000; // 5 seconds timeout
@@ -76,7 +78,8 @@ public class mainPage extends AppCompatActivity {
             if (itemId == R.id.group) {
                 replaceFragment(new groupFragment());
             } else if (itemId == R.id.person) {
-                replaceFragment(new personFragment());
+                personFrag = new personFragment();
+                replaceFragment(personFrag);
             } else if (itemId == R.id.settings) {
                 replaceFragment(new settingsFragment());
             }
@@ -111,39 +114,47 @@ public class mainPage extends AppCompatActivity {
     }
 
     private void discover() {
-        Toast.makeText(mainPage.this,"Clicked",Toast.LENGTH_SHORT).show();
-//        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.NEARBY_WIFI_DEVICES) != PackageManager.PERMISSION_GRANTED) {
-//            Toast.makeText(mainPage.this,"Permissions denied",Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-        mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Toast.makeText(mainPage.this, "Peer discovery initiated", Toast.LENGTH_SHORT).show();
-                connect();
-            }
+        Toast.makeText(mainPage.this, "Clicked", Toast.LENGTH_SHORT).show();
 
-            @Override
-            public void onFailure(int reasonCode) {
-                String message;
-                switch (reasonCode) {
-                    case WifiP2pManager.ERROR:
-                        message = "Internal error occurred.";
-                        break;
-                    case WifiP2pManager.P2P_UNSUPPORTED:
-                        message = "Wi-Fi Direct is not supported on this device.";
-                        break;
-                    case WifiP2pManager.BUSY:
-                        message = "Wi-Fi Direct is busy. Please try again.";
-                        break;
-                    default:
-                        message = "Unknown error.";
-                        break;
+        // Check if there are already available peers
+        if (!peers.isEmpty()) {
+            // Attempt to connect to the first device in the peer list
+            deviceArray = new WifiP2pDevice[peers.size()];
+            peers.toArray(deviceArray);  // Convert the list to an array
+            currentDeviceIndex = 0;  // Start with the first device in the list
+            connect();  // Try to connect directly
+        } else {
+            // Start discovering peers if no devices are in the list
+            mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Toast.makeText(mainPage.this, "Peer discovery initiated", Toast.LENGTH_SHORT).show();
+                    // Note: connection will be attempted in `onPeersAvailable()` callback
                 }
-                Toast.makeText(mainPage.this, "Peer discovery failed: " + message, Toast.LENGTH_SHORT).show();
-            }
-        });
+
+                @Override
+                public void onFailure(int reasonCode) {
+                    String message;
+                    switch (reasonCode) {
+                        case WifiP2pManager.ERROR:
+                            message = "Internal error occurred.";
+                            break;
+                        case WifiP2pManager.P2P_UNSUPPORTED:
+                            message = "Wi-Fi Direct is not supported on this device.";
+                            break;
+                        case WifiP2pManager.BUSY:
+                            message = "Wi-Fi Direct is busy. Please try again.";
+                            break;
+                        default:
+                            message = "Unknown error.";
+                            break;
+                    }
+                    Toast.makeText(mainPage.this, "Peer discovery failed: " + message, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
+
 
     private void connect() {
         if (deviceArray == null || deviceArray.length == 0) {
@@ -211,6 +222,9 @@ public class mainPage extends AppCompatActivity {
                     deviceNameArray[index] = device.deviceName;
                     deviceArray[index] = device;
                     index++;
+                }
+                if(personFrag!=null) {
+                    personFrag.updateDeviceList(deviceNameArray);
                 }
             } else {
                 Toast.makeText(mainPage.this, "No new peers found", Toast.LENGTH_SHORT).show();
