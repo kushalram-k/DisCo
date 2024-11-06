@@ -1,11 +1,7 @@
 package com.example.myapplication;
-import com.example.myapplication.R;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -14,23 +10,15 @@ import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.myapplication.databinding.ActivityMainBinding;
 import com.example.myapplication.databinding.ActivityMainPageBinding;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -158,53 +146,55 @@ public class mainPage extends AppCompatActivity {
     }
 
     private void connect() {
-        if (!peers.isEmpty() && currentDeviceIndex < deviceArray.length) {
-            Toast.makeText(mainPage.this, "Starting connection", Toast.LENGTH_SHORT).show();
-            WifiP2pDevice device = deviceArray[currentDeviceIndex];
-            WifiP2pConfig config = new WifiP2pConfig();
-            config.deviceAddress = device.deviceAddress;
-
-//            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.NEARBY_WIFI_DEVICES) != PackageManager.PERMISSION_GRANTED) {
-//                return;
-//            }
-
-            // Initialize a timeout runnable
-            timeoutRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    // If connection is not successful in the given timeout, move to the next device
-                    Toast.makeText(mainPage.this, "Connection attempt timed out for " + device.deviceName, Toast.LENGTH_SHORT).show();
-                    currentDeviceIndex++;
-                    connect(); // Attempt to connect to the next device
-                }
-            };
-
-            // Start the timeout countdown
-            connectionHandler.postDelayed(timeoutRunnable, CONNECTION_TIMEOUT);
-
-            mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
-                @Override
-                public void onSuccess() {
-                    // Remove the timeout callback since connection succeeded
-                    connectionHandler.removeCallbacks(timeoutRunnable);
-                    Toast.makeText(mainPage.this, "Connected to " + device.deviceName, Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(int reason) {
-                    // Remove the timeout callback since connection failed
-                    connectionHandler.removeCallbacks(timeoutRunnable);
-                    Toast.makeText(mainPage.this, "Device connection failed", Toast.LENGTH_SHORT).show();
-
-                    // Move to the next device
-                    currentDeviceIndex++;
-                    connect();
-                }
-            });
-        }else {
-            Toast.makeText(mainPage.this,"No peer found", Toast.LENGTH_SHORT).show();
+        if (deviceArray == null || deviceArray.length == 0) {
+            Toast.makeText(mainPage.this, "No available devices to connect to.", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        if (currentDeviceIndex >= deviceArray.length) {
+            Toast.makeText(mainPage.this, "All connection attempts failed.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        WifiP2pDevice device = deviceArray[currentDeviceIndex];
+        WifiP2pConfig config = new WifiP2pConfig();
+        config.deviceAddress = device.deviceAddress;
+
+        // Initialize a timeout runnable
+        timeoutRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // If connection is not successful in the given timeout, move to the next device
+                Toast.makeText(mainPage.this, "Connection attempt timed out for " + device.deviceName, Toast.LENGTH_SHORT).show();
+                currentDeviceIndex++;
+                connect(); // Attempt to connect to the next device
+            }
+        };
+
+        // Start the timeout countdown
+        connectionHandler.postDelayed(timeoutRunnable, CONNECTION_TIMEOUT);
+
+        mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                // Remove the timeout callback since connection succeeded
+                connectionHandler.removeCallbacks(timeoutRunnable);
+                Toast.makeText(mainPage.this, "Connected to " + device.deviceName, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                // Remove the timeout callback since connection failed
+                connectionHandler.removeCallbacks(timeoutRunnable);
+                Toast.makeText(mainPage.this, "Device connection failed", Toast.LENGTH_SHORT).show();
+
+                // Move to the next device
+                currentDeviceIndex++;
+                connect();
+            }
+        });
     }
+
 
     WifiP2pManager.PeerListListener peerListListener = new WifiP2pManager.PeerListListener() {
         @Override
@@ -212,7 +202,7 @@ public class mainPage extends AppCompatActivity {
             if (!peersList.getDeviceList().equals(peers)) {
                 peers.clear();
                 peers.addAll(peersList.getDeviceList());
-                Toast.makeText(mainPage.this,"Found " + peers.size() + " peers", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mainPage.this, "Found " + peers.size() + " peers", Toast.LENGTH_SHORT).show();
 
                 deviceNameArray = new String[peersList.getDeviceList().size()];
                 deviceArray = new WifiP2pDevice[peersList.getDeviceList().size()];
@@ -222,8 +212,8 @@ public class mainPage extends AppCompatActivity {
                     deviceArray[index] = device;
                     index++;
                 }
-//                ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, deviceNameArray);
-//                lstvw.setAdapter(adapter);
+            } else {
+                Toast.makeText(mainPage.this, "No new peers found", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -233,12 +223,16 @@ public class mainPage extends AppCompatActivity {
         public void onConnectionInfoAvailable(WifiP2pInfo info) {
             if (info.groupFormed && info.isGroupOwner) {
 
+                Toast.makeText(mainPage.this,"acting as server", Toast.LENGTH_SHORT).show();
                 serverTask = new ServerTask(handler, (MyApplication) getApplication());
+                ClientManager.setServerTask(serverTask);
                 serverTask.start();
             } else if (info.groupFormed) {
 
+                Toast.makeText(mainPage.this,"acting as client", Toast.LENGTH_SHORT).show();
                 clientTask = new ClientTask(info.groupOwnerAddress,handler,(MyApplication) getApplication());
-                ClientTaskHolder.setClientTask(clientTask);
+                String clientKey = info.groupOwnerAddress.getHostAddress(); // Use the IP address as the unique key
+                ClientManager.addClientTask(clientKey, clientTask);
                 clientTask.start();
             }
         }

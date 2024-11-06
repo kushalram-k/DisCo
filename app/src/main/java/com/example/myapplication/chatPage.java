@@ -4,14 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -21,6 +16,8 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 public class chatPage extends AppCompatActivity implements MessageListener{
@@ -68,14 +65,8 @@ public class chatPage extends AppCompatActivity implements MessageListener{
                     chatMessageInput.setText(""); // Clear the input field
 
                 //send message using Networkservice
-//                    networkService.sendMessage(messageText);  // Trigger sendMessage in NetworkService
-                    ClientTask clientTask = ClientTaskHolder.getClientTask();
-                    if(clientTask != null){
-                        clientTask.sendMessage(messageText);
-                    }
-                    else{
-                        Log.e("ChatPage","ClientTask is null");
-                    }
+                //networkService.sendMessage(messageText);  // Trigger sendMessage in NetworkService
+                    Broadcast(messageText);
                 }
             }
         });
@@ -96,6 +87,24 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
 
 
+    }
+
+    private void Broadcast(String message){
+
+        List<ClientTask> peers = ClientManager.getAll();
+
+        if(ClientManager.getServerTask() != null){
+            ClientManager.getServerTask().sendMessage(message);
+        }else {
+
+            if (peers.isEmpty()) Log.e("ChatPage", "No peers connected");
+
+
+            for (ClientTask peer : peers) {
+                peer.sendMessage(message);
+            }
+
+        }
     }
 
     @Override

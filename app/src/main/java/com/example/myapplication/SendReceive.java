@@ -51,14 +51,11 @@ public class SendReceive extends Thread {
     }
 
     public void write(final byte[] bytes) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    outputStream.write(bytes);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        new Thread(() -> {
+            try {
+                outputStream.write(bytes);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }).start();
     }
