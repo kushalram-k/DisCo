@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -42,11 +45,22 @@ public class ClientTask extends Thread {
         }
     }
 
-    public void sendMessage(String message){
+    public void sendMessage(ChatMessage message) {
         if (sendReceive != null) {
-            sendReceive.write(message.getBytes());
+            try {
+                // Serialize the object
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+                objectOutputStream.writeObject(message);
+                objectOutputStream.flush();
+
+                // Send the serialized object as a byte array
+                sendReceive.write(byteArrayOutputStream.toByteArray());
+            } catch (IOException e) {
+                Log.e("sendMessage", "Error serializing object", e);
+            }
         } else {
-            Log.d("serverTask","connection not established");
+            Log.d("serverTask", "connection not established");
         }
     }
 }

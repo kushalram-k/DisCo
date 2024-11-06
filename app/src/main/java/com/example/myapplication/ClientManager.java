@@ -43,7 +43,7 @@ public class ClientManager {
     }
 
     // Send message to the client
-    public static void sendMessageToClient(String clientKey, String message) {
+    public static void sendMessageToClient(String clientKey, ChatMessage message) {
         ClientTask clientTask = clientTasks.get(clientKey);
         if (clientTask != null) {
             clientTask.sendMessage(message);

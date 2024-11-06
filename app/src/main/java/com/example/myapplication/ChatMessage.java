@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
-public class ChatMessage {
+import java.io.Serializable;
+
+public class ChatMessage implements Serializable {
     private String text;
     private long timestamp;
     private boolean isSent;  // True if the message is sent, false if received
@@ -14,6 +16,7 @@ public class ChatMessage {
     public String getText() {
         return text;
     }
+
 
     public long getTimestamp() {
         return timestamp;

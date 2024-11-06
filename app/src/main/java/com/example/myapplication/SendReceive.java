@@ -1,10 +1,13 @@
 package com.example.myapplication;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import android.os.Handler;
+import android.util.Log;
 
 
 public class SendReceive extends Thread {
@@ -34,18 +37,29 @@ public class SendReceive extends Thread {
         while (socket != null) {
             try {
                 bytes = inputStream.read(buffer);
-                if (bytes > 0) {
-                    String message = new String(buffer,0,bytes);
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer, 0, bytes);
+                ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+                Object receivedObject = objectInputStream.readObject();
 
-                    //Update UI in chatPage
+                // Update UI with the deserialized object
+                if (receivedObject instanceof ChatMessage) {
+                    // Cast the object to ChatMessage
+                    ChatMessage chatMessage = (ChatMessage) receivedObject;
+
+                    // Update UI or process the ChatMessage object
                     MessageListener listener = app.getMessageListener();
-                    if(listener != null){
-                        listener.onMessageReceived(message);
+                    if (listener != null) {
+                        listener.onMessageReceived(chatMessage);
                     }
+                } else {
+                    // Handle the case where the object is not a ChatMessage
+                    Log.e("receiveMessage", "Received object is not a ChatMessage");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
                 break; // Exit the loop if an exception occurs
+            } catch (ClassNotFoundException e) {
+                Log.e("SendReceive : ", "Error deserializing object",e);
             }
         }
     }

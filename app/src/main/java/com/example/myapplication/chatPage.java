@@ -59,6 +59,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
                 if (!messageText.isEmpty()) {
                     long currentTime = System.currentTimeMillis(); // Get current time
                     ChatMessage message = new ChatMessage(messageText, currentTime,true); // Create new ChatMessage
+                    ChatMessage sentMessage = new ChatMessage(messageText,currentTime,false);
                     chatMessages.add(message); // Add the message to the list
                     chatAdapter.notifyItemInserted(chatMessages.size() - 1); // Notify adapter
                     chatRecyclerView.scrollToPosition(chatMessages.size() - 1); // Scroll to the last message
@@ -66,7 +67,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
                 //send message using Networkservice
                 //networkService.sendMessage(messageText);  // Trigger sendMessage in NetworkService
-                    Broadcast(messageText);
+                    Broadcast(sentMessage);
                 }
             }
         });
@@ -89,7 +90,8 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
     }
 
-    private void Broadcast(String message){
+    private void Broadcast(ChatMessage message){
+
 
         List<ClientTask> peers = ClientManager.getAll();
 
@@ -108,11 +110,11 @@ public class chatPage extends AppCompatActivity implements MessageListener{
     }
 
     @Override
-    public void onMessageReceived(final String message){
+    public void onMessageReceived(final ChatMessage incomingMessage){
         //This method is called when a new message is received
         long currentTime1 = System.currentTimeMillis();
         runOnUiThread(() ->{
-            ChatMessage incomingMessage = new ChatMessage(message, currentTime1, false);  // 'false' indicates it's not sent by the user
+
             chatMessages.add(incomingMessage);
             chatAdapter.notifyItemInserted(chatMessages.size() - 1);
             chatRecyclerView.scrollToPosition(chatMessages.size() - 1);
