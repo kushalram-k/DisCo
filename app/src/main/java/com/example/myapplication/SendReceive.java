@@ -51,6 +51,11 @@ public class SendReceive extends Thread {
                     if (listener != null) {
                         listener.onMessageReceived(chatMessage);
                     }
+
+                    if(ClientManager.getServerTask() != null){
+                        ClientManager.getServerTask().sendMessage(chatMessage);
+                    }
+
                 } else {
                     // Handle the case where the object is not a ChatMessage
                     Log.e("receiveMessage", "Received object is not a ChatMessage");
