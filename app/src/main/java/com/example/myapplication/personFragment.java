@@ -86,14 +86,14 @@ public class personFragment extends Fragment {
 
         // Set an OnItemClickListener on the ListView
         listView.setOnItemClickListener((parent, view1, position, id) -> {
-
+            mainPageholder.mainPage1.connect(position);
         });
         // Return the inflated view
         return view;
     }
 
     public void updateDeviceList(String[] newDevices) {
-        deviceList.clear();
+        if(!deviceList.isEmpty())  deviceList.clear();
         deviceList.addAll(Arrays.asList(newDevices));
         adapter.notifyDataSetChanged();
     }

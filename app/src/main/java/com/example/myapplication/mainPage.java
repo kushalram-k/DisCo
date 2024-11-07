@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pConfig;
@@ -54,6 +55,7 @@ public class mainPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mainPageholder.mainPage1 = this;
         // Inflate the correct layout (activity_main_page.xml)
         binding = ActivityMainPageBinding.inflate(getLayoutInflater());
 
@@ -79,6 +81,7 @@ public class mainPage extends AppCompatActivity {
                 replaceFragment(new groupFragment());
             } else if (itemId == R.id.person) {
                 personFrag = new personFragment();
+
                 replaceFragment(personFrag);
             } else if (itemId == R.id.settings) {
                 replaceFragment(new settingsFragment());
@@ -122,7 +125,7 @@ public class mainPage extends AppCompatActivity {
             deviceArray = new WifiP2pDevice[peers.size()];
             peers.toArray(deviceArray);  // Convert the list to an array
             currentDeviceIndex = 0;  // Start with the first device in the list
-            connect();  // Try to connect directly
+//            connect();  // Try to connect directly
         } else {
             // Start discovering peers if no devices are in the list
             mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
@@ -156,7 +159,8 @@ public class mainPage extends AppCompatActivity {
     }
 
 
-    private void connect() {
+    public void connect(int position) {
+
         if (deviceArray == null || deviceArray.length == 0) {
             Toast.makeText(mainPage.this, "No available devices to connect to.", Toast.LENGTH_SHORT).show();
             return;
@@ -167,20 +171,11 @@ public class mainPage extends AppCompatActivity {
             return;
         }
 
-        WifiP2pDevice device = deviceArray[currentDeviceIndex];
+        WifiP2pDevice device = deviceArray[position];
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
 
         // Initialize a timeout runnable
-        timeoutRunnable = new Runnable() {
-            @Override
-            public void run() {
-                // If connection is not successful in the given timeout, move to the next device
-                Toast.makeText(mainPage.this, "Connection attempt timed out for " + device.deviceName, Toast.LENGTH_SHORT).show();
-                currentDeviceIndex++;
-                connect(); // Attempt to connect to the next device
-            }
-        };
 
         // Start the timeout countdown
         connectionHandler.postDelayed(timeoutRunnable, CONNECTION_TIMEOUT);
@@ -198,10 +193,6 @@ public class mainPage extends AppCompatActivity {
                 // Remove the timeout callback since connection failed
                 connectionHandler.removeCallbacks(timeoutRunnable);
                 Toast.makeText(mainPage.this, "Device connection failed", Toast.LENGTH_SHORT).show();
-
-                // Move to the next device
-                currentDeviceIndex++;
-                connect();
             }
         });
     }

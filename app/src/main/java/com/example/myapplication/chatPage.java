@@ -100,7 +100,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
         if(ClientManager.getServerTask() != null){
             ClientManager.getServerTask().sendMessage(message);
-        }else {
+        }
 
             if (peers.isEmpty()) Log.e("ChatPage", "No peers connected");
 
@@ -109,7 +109,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
                 peer.sendMessage(message);
             }
 
-        }
+
     }
 
     @Override
@@ -118,6 +118,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
         long currentTime1 = System.currentTimeMillis();
         runOnUiThread(() ->{
             Log.d("chatPage",incomingMessage.getGrpName());
+            Log.d("chatPage", incomingMessage.getUserId());
 
             chatMessages.add(incomingMessage);
             chatAdapter.notifyItemInserted(chatMessages.size() - 1);

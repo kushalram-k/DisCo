@@ -20,6 +20,10 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
+
 public class otp_page extends AppCompatActivity {
     private static final String TAG = "otp_page";
     EditText otpDigit1, otpDigit2, otpDigit3, otpDigit4;
@@ -105,6 +109,7 @@ public class otp_page extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
                                         Log.d(TAG, "User data saved to database");
+
                                         navigateToGroupFragment();
                                     } else {
                                         Log.e(TAG, "Error saving user data to database", task.getException());

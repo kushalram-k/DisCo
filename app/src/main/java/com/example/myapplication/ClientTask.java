@@ -37,7 +37,8 @@ public class ClientTask extends Thread {
     public void run() {
         try {
             socket = new Socket();
-            socket.connect(new InetSocketAddress(hostAddress, 8888), 5000);
+            socket.setKeepAlive(true);
+            socket.connect(new InetSocketAddress(hostAddress, 8888));
             sendReceive = new SendReceive(socket,handler,app);
             sendReceive.start();
         } catch (IOException e) {
