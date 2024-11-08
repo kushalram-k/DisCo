@@ -166,9 +166,11 @@ public class chatPage extends AppCompatActivity implements MessageListener{
     private ChatAdapter chatAdapter;
     private Intent intent;
     TextView groupName;
+    private String senderUserID;
     private ArrayList<ChatMessage> chatMessages;  // Use ChatMessage instead of String
     //    private Networkservice networkService;  // Add a NetworkService object
     private Handler uihandler;
+    private String selectedPerson;
 
     //Database changes
     MyDatabaseHelper myDB2;
@@ -187,6 +189,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
         intent=getIntent();
         String grpName = intent.getStringExtra(groupFragment.GROUP_NAME);
+        selectedPerson = intent.getStringExtra(personFragment.GROUP_NAME);
 //        uihandler = new Handler();
 
         ((MyApplication) getApplication()).setMessageListener(this);
@@ -225,7 +228,6 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
                 MyDatabaseHelper myDB=new MyDatabaseHelper(chatPage.this);
                 Cursor curs=myDB.readUserIdFromDb();
-                String senderUserID="";
                 if(curs.getCount()==0){
                     Toast.makeText(chatPage.this, "No userId in DB", Toast.LENGTH_SHORT).show();
                 }else{
@@ -238,8 +240,8 @@ public class chatPage extends AppCompatActivity implements MessageListener{
                 long currentTime=0;
                 if (!messageText.isEmpty()) {
                     currentTime = System.currentTimeMillis(); // Get current time
-                    ChatMessage message = new ChatMessage(messageText, currentTime,true,grpName,senderUserID); // Create new ChatMessage
-                    ChatMessage sentMessage = new ChatMessage(messageText,currentTime,false,grpName,senderUserID);
+                    ChatMessage message = new ChatMessage(messageText, currentTime,true,grpName,senderUserID,null); // Create new ChatMessage
+                    ChatMessage sentMessage = new ChatMessage(messageText,currentTime,false,grpName,senderUserID,null);
                     chatMessages.add(message); // Add the message to the list
                     chatAdapter.notifyItemInserted(chatMessages.size() - 1); // Notify adapter
                     chatRecyclerView.scrollToPosition(chatMessages.size() - 1); // Scroll to the last message
@@ -247,6 +249,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
                     //send message using Networkservice
                     //networkService.sendMessage(messageText);  // Trigger sendMessage in NetworkService
+                    if(selectedPerson!=null)sentMessage.setDestination(selectedPerson);
                     Broadcast(sentMessage);
                 }
 
@@ -275,7 +278,6 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
     private void Broadcast(ChatMessage message){
 
-
         List<ClientTask> peers = ClientManager.getAll();
 
         if(ClientManager.getServerTask() != null){
@@ -292,26 +294,32 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
     }
 
+
     @Override
     public void onMessageReceived(final ChatMessage incomingMessage){
         //This method is called when a new message is received
         long currentTime1 = System.currentTimeMillis();
-        runOnUiThread(() ->{
-            Log.d("chatPage",incomingMessage.getGrpName());
-            Log.d("chatPage", incomingMessage.getUserId());
+
+        if (!incomingMessage.getUserId().equals(senderUserID) ) {
+            if (selectedPerson==null || incomingMessage.getDestination().equals(ClientManager.deviceName)) {
+                runOnUiThread(() ->{
+                    Log.d("chatPage",incomingMessage.getGrpName());
+                    Log.d("chatPage", incomingMessage.getUserId());
 
 
-            MyDatabaseHelper myDB=new MyDatabaseHelper(chatPage.this);
-            myDB.addMessage(intent.getStringExtra(groupFragment.GROUP_NAME),incomingMessage.getUserId(),incomingMessage.getText(),incomingMessage.getTimestamp());
+                    MyDatabaseHelper myDB=new MyDatabaseHelper(chatPage.this);
+                    myDB.addMessage(intent.getStringExtra(groupFragment.GROUP_NAME),incomingMessage.getUserId(),incomingMessage.getText(),incomingMessage.getTimestamp());
 
 
 
 
-            chatMessages.add(incomingMessage);
-            chatAdapter.notifyItemInserted(chatMessages.size() - 1);
-            chatRecyclerView.scrollToPosition(chatMessages.size() - 1);
+                    chatMessages.add(incomingMessage);
+                    chatAdapter.notifyItemInserted(chatMessages.size() - 1);
+                    chatRecyclerView.scrollToPosition(chatMessages.size() - 1);
 
-        });
+                });
+            }
+        }
     }
 
 
@@ -341,10 +349,10 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 //                    Toast.makeText(this, "Messages are there...", Toast.LENGTH_SHORT).show();
                     ChatMessage MSG;
                     if(cursor.getString(2).equals(senderUserID)){
-                        MSG= new ChatMessage(cursor.getString(3), cursor.getLong(4),true,grpName, cursor.getString(2));
+                        MSG= new ChatMessage(cursor.getString(3), cursor.getLong(4),true,grpName, cursor.getString(2),null);
                     }
                     else{
-                        MSG= new ChatMessage(cursor.getString(3), cursor.getLong(4),false,grpName, cursor.getString(2));
+                        MSG= new ChatMessage(cursor.getString(3), cursor.getLong(4),false,grpName, cursor.getString(2),null);
                     }
                     chatMessages.add(MSG);
                     id_array.add(cursor.getString(0));

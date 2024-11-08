@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import android.os.Handler;
 import android.util.Log;
@@ -27,6 +28,10 @@ public class SendReceive extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public InetAddress getIPaddress(){
+        return socket.getInetAddress();
     }
 
     @Override
@@ -54,6 +59,7 @@ public class SendReceive extends Thread {
 
                     if(ClientManager.getServerTask() != null){
                         ClientManager.getServerTask().sendMessage(chatMessage);
+
                     }
 
                 } else {

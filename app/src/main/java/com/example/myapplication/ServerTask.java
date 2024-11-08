@@ -7,6 +7,7 @@ import android.widget.Toast;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class ServerTask extends Thread {
 
     public void sendMessage(ChatMessage message) {
         for(SendReceive sendReceive : clients) {
+
             if (sendReceive != null) {
                 try {
                     // Serialize the object
