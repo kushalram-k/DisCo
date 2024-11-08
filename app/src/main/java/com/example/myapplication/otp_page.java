@@ -110,6 +110,11 @@ public class otp_page extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         Log.d(TAG, "User data saved to database");
 
+                                        String userId=auth.getUid().toString().trim();
+                                        MyDatabaseHelper myDB=new MyDatabaseHelper(otp_page.this);
+                                        myDB.addUserIdToDB(userId);
+
+
                                         navigateToGroupFragment();
                                     } else {
                                         Log.e(TAG, "Error saving user data to database", task.getException());

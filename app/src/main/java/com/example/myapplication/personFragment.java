@@ -22,6 +22,9 @@ import java.util.List;
  */
 public class personFragment extends Fragment {
 
+
+    public static final String GROUP_NAME="Food_DisCo";
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -87,6 +90,12 @@ public class personFragment extends Fragment {
         // Set an OnItemClickListener on the ListView
         listView.setOnItemClickListener((parent, view1, position, id) -> {
             mainPageholder.mainPage1.connect(position);
+
+
+            String selectedPerson = deviceList.get(position); // Get the clicked item
+            Intent intent = new Intent(getActivity(), chatPage.class);
+            intent.putExtra(GROUP_NAME,selectedPerson);
+            startActivity(intent);
         });
         // Return the inflated view
         return view;
