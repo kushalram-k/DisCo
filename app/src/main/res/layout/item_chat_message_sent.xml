@@ -7,17 +7,34 @@
     android:gravity="end"
     android:padding="8dp">
 
-    <!-- Message Text -->
-    <TextView
-        android:id="@+id/chat_message_text"
+    <!-- Blue Bubble Layout -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bubble_background_sent"
-        android:maxWidth="200dp"
+        android:orientation="vertical"
         android:padding="8dp"
-        android:text="Message"
-        android:textColor="@android:color/white"
-        android:textSize="18sp" />
+        android:maxWidth="200dp">
+
+        <!-- Sender Name inside the Blue Layout -->
+        <TextView
+            android:id="@+id/chat_sender_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="Sender Name"
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
+
+        <!-- Message Text -->
+        <TextView
+            android:id="@+id/chat_message_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Message"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
 
     <!-- Message Time -->
     <TextView

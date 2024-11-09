@@ -1,25 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical">
-
-<TextView
-    android:id="@+id/tvPerson"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Chats"
-    android:textSize="24sp"
-    android:padding="16dp" />
-
-<View
     android:layout_width="match_parent"
-    android:layout_height="3dp"
-    android:background="#000" />
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-<ListView
-    android:id="@+id/listViewPersons"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+    <!-- Use RelativeLayout to position TextView and Button next to each other -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvPerson"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chats"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/button13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Discover"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#000" />
+
+    <ListView
+        android:id="@+id/listViewPersons"
+        android:layout_width="match_parent"
+        android:layout_height="639dp" />
 
 </LinearLayout>

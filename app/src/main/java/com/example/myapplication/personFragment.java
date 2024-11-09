@@ -9,7 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +37,7 @@ public class personFragment extends Fragment {
     private String mParam2;
     private List<String> deviceList;
     private ArrayAdapter<String> adapter;
+    Button discoverButton;
 
 
     public personFragment() {
@@ -97,6 +100,22 @@ public class personFragment extends Fragment {
             intent.putExtra(GROUP_NAME,selectedPerson);
             startActivity(intent);
         });
+
+
+
+
+        // Now use view.findViewById to get references to your views
+        discoverButton = view.findViewById(R.id.button13);
+        discoverButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() instanceof mainPage) {
+                    ((mainPage) getActivity()).discover();
+                }
+            }
+        });
+
+
         // Return the inflated view
         return view;
     }

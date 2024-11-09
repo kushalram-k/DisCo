@@ -38,7 +38,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class registerPage extends AppCompatActivity {
-    TextView tv9;
     Button sendOTPbtn;
     EditText u_name,em,pass,conpass;
     String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
@@ -110,14 +109,7 @@ public class registerPage extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register_page);
 
-        tv9=findViewById(R.id.textView9);
-        tv9.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(registerPage.this, loginPage.class);
-                startActivity(intent);
-            }
-        });
+
 
         u_name=findViewById(R.id.editTextText4);
         em=findViewById(R.id.editTextText5);

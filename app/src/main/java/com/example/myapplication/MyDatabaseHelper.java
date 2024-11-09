@@ -29,9 +29,9 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 //        String query="CREATE TABLE " + "ChatMessages"+ " ("+ "_id" + " INTEGER PRIMARY KEY AUTOINCREMENT, " + "message_group" + " TEXT, " + "message_sender" + " TEXT, " + "message_message" + " TEXT, " + "message_time" + " INTEGER);";
-        String query="CREATE TABLE ChatMessages (_id INTEGER PRIMARY KEY AUTOINCREMENT, message_group TEXT, message_sender TEXT, message_message TEXT, message_time INTEGER);";
+        String query="CREATE TABLE ChatMessages (_id INTEGER PRIMARY KEY AUTOINCREMENT, message_group TEXT, message_sender TEXT, message_message TEXT, message_time INTEGER, message_sender_name TEXT);";
         String query2="CREATE TABLE PrivateMessages (_id INTEGER PRIMARY KEY AUTOINCREMENT, message_sender TEXT, message_receiver TEXT, message_message TEXT, message_time INTEGER);";
-        String query3="CREATE TABLE forUserId (_id INTEGER PRIMARY KEY AUTOINCREMENT, userIdInDB TEXT);";
+        String query3="CREATE TABLE forUserId (_id INTEGER PRIMARY KEY AUTOINCREMENT, userIdInDB TEXT, userNameInDB TEXT);";
         db.execSQL(query);
         db.execSQL(query2);
         db.execSQL(query3);
@@ -42,7 +42,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + "ChatMessages");
         onCreate(db);
     }
-    void addMessage(String group, String sender, String message, long time){
+    void addMessage(String group, String sender, String message, long time,String sender_name){
         SQLiteDatabase db=this.getWritableDatabase();
         ContentValues cv=new ContentValues();
 
@@ -50,6 +50,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         cv.put("message_sender",sender);
         cv.put("message_message",message);
         cv.put("message_time",time);
+        cv.put("message_sender_name",sender_name);
         long result=db.insert("ChatMessages",null,cv);
         if(result==-1){
             Toast.makeText(context, "Sending Message Failed...", Toast.LENGTH_SHORT).show();
@@ -58,11 +59,12 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    void addUserIdToDB(String userID){
+    void addUserIdToDB(String userID,String userName){
         SQLiteDatabase db=this.getWritableDatabase();
         ContentValues cv=new ContentValues();
 
         cv.put("userIdInDB",userID);
+        cv.put("userNameInDB",userName);
         long result=db.insert("forUserId",null,cv);
         if(result==-1){
             Toast.makeText(context, "Adding userId to DB failed...", Toast.LENGTH_SHORT).show();

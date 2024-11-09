@@ -48,7 +48,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
         ChatMessage message = chatMessages.get(position);
         holder.chatMessageText.setText(message.getText());
-
+        holder.chatSenderName.setText("~ "+message.getUserName());
         // Format the timestamp and display it
         SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         String formattedTime = dateFormat.format(new Date(message.getTimestamp()));
@@ -64,11 +64,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
         TextView chatMessageText;
         TextView chatMessageTime;
+        TextView chatSenderName;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
             chatMessageText = itemView.findViewById(R.id.chat_message_text);
             chatMessageTime = itemView.findViewById(R.id.chat_message_time);
+            chatSenderName=itemView.findViewById(R.id.chat_sender_name);
         }
     }
 }

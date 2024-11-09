@@ -112,7 +112,7 @@ public class otp_page extends AppCompatActivity {
 
                                         String userId=auth.getUid().toString().trim();
                                         MyDatabaseHelper myDB=new MyDatabaseHelper(otp_page.this);
-                                        myDB.addUserIdToDB(userId);
+                                        myDB.addUserIdToDB(userId,username);
 
 
                                         navigateToGroupFragment();

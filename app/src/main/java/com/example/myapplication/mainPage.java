@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class mainPage extends AppCompatActivity {
-    private Button discoverButton;
+//    private Button discoverButton;
     WifiManager wifimanager;
     WifiP2pManager mManager;
     WifiP2pManager.Channel mChannel;
@@ -75,8 +75,8 @@ public class mainPage extends AppCompatActivity {
 
         initialWork();
 
-        discoverButton = findViewById(R.id.discoverButton);
-        discoverButton.setOnClickListener(v -> discover());
+//        discoverButton = findViewById(R.id.discoverButton);
+//        discoverButton.setOnClickListener(v -> discover());
 
         // Now you can reference bottomNavigationView correctly
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
@@ -123,7 +123,7 @@ public class mainPage extends AppCompatActivity {
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
     }
 
-    private void discover() {
+    public void discover() {
         Toast.makeText(mainPage.this, "Clicked", Toast.LENGTH_SHORT).show();
 
         // Check if there are already available peers

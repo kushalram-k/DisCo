@@ -15,14 +15,16 @@ public class ChatMessage implements Serializable {
     private boolean isSent;  // True if the message is sent, false if received
     private String grp;
     private String destination;
+    private String userName;
 
-    public ChatMessage(String text, long timestamp, boolean isSent, String grpName,String userId,String destination) {
+    public ChatMessage(String text, long timestamp, boolean isSent, String grpName,String userId,String destination,String userName) {
         this.userId=userId;
         this.text = text;
         this.timestamp = timestamp;
         this.isSent = isSent;
         this.grp = grpName;
         this.destination = destination;
+        this.userName=userName;
     }
 
     public String getDestination(){
@@ -48,4 +50,5 @@ public class ChatMessage implements Serializable {
     }
 
     public String getGrpName(){return grp;}
+    public String getUserName(){return userName;}
 }

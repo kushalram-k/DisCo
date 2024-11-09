@@ -1,12 +1,14 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,10 +40,27 @@ public class splashScreen extends AppCompatActivity {
         tv4.setAnimation(bottomAnim);
         tv5.setAnimation(rightAnim);
         iv.setAnimation(topAnim);
+
+        String senderUserID="Blank";
+        MyDatabaseHelper myDB=new MyDatabaseHelper(splashScreen.this);
+        Cursor curs=myDB.readUserIdFromDb();
+        if(curs.getCount()==0){
+//            Toast.makeText(splashScreen.this, "No userId in DB", Toast.LENGTH_SHORT).show();
+        }else{
+            curs.moveToFirst();
+            senderUserID=curs.getString(1);
+        }
+
+        String finalSenderUserID = senderUserID;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent=new Intent(splashScreen.this,loginPage.class);
+                Intent intent = null;
+                if(finalSenderUserID.equals("Blank")){
+                    intent=new Intent(splashScreen.this,registerPage.class);
+                }else{
+                    intent=new Intent(splashScreen.this,mainPage.class);
+                }
                 startActivity(intent);
                 finish();
             }
