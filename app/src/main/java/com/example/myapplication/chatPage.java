@@ -170,7 +170,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
     private ArrayList<ChatMessage> chatMessages;  // Use ChatMessage instead of String
     //    private Networkservice networkService;  // Add a NetworkService object
     private Handler uihandler;
-    private String selectedPerson;
+//    private String selectedPerson;
 
     //Database changes
     MyDatabaseHelper myDB2;
@@ -189,7 +189,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
         intent=getIntent();
         String grpName = intent.getStringExtra(groupFragment.GROUP_NAME);
-        selectedPerson = intent.getStringExtra(personFragment.GROUP_NAME);
+//        selectedPerson = intent.getStringExtra(personFragment.GROUP_NAME);
 //        uihandler = new Handler();
 
         ((MyApplication) getApplication()).setMessageListener(this);
@@ -241,8 +241,8 @@ public class chatPage extends AppCompatActivity implements MessageListener{
                 long currentTime=0;
                 if (!messageText.isEmpty()) {
                     currentTime = System.currentTimeMillis(); // Get current time
-                    ChatMessage message = new ChatMessage(messageText, currentTime,true,grpName,senderUserID,null,senderUserName); // Create new ChatMessage
-                    ChatMessage sentMessage = new ChatMessage(messageText,currentTime,false,grpName,senderUserID,null,senderUserName);
+                    ChatMessage message = new ChatMessage(messageText, currentTime,true,grpName,senderUserID,senderUserName); // Create new ChatMessage
+                    ChatMessage sentMessage = new ChatMessage(messageText,currentTime,false,grpName,senderUserID,senderUserName);
                     chatMessages.add(message); // Add the message to the list
                     chatAdapter.notifyItemInserted(chatMessages.size() - 1); // Notify adapter
                     chatRecyclerView.scrollToPosition(chatMessages.size() - 1); // Scroll to the last message
@@ -250,7 +250,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
                     //send message using Networkservice
                     //networkService.sendMessage(messageText);  // Trigger sendMessage in NetworkService
-                    if(selectedPerson!=null)sentMessage.setDestination(selectedPerson);
+//                    if(selectedPerson!=null)sentMessage.setDestination(selectedPerson);
                     Broadcast(sentMessage);
                 }
 
@@ -301,8 +301,8 @@ public class chatPage extends AppCompatActivity implements MessageListener{
         //This method is called when a new message is received
         long currentTime1 = System.currentTimeMillis();
 
-        if (!incomingMessage.getUserId().equals(senderUserID) ) {
-            if (selectedPerson==null || incomingMessage.getDestination().equals(ClientManager.deviceName)) {
+        if (!incomingMessage.getUserId().equals(senderUserID) && incomingMessage.getGrpName().equals(groupName.getText())) {
+
                 runOnUiThread(() ->{
                     Log.d("chatPage",incomingMessage.getGrpName());
                     Log.d("chatPage", incomingMessage.getUserId());
@@ -320,7 +320,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
                     chatRecyclerView.scrollToPosition(chatMessages.size() - 1);
 
                 });
-            }
+
         }
     }
 
@@ -353,10 +353,10 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 //                    Toast.makeText(this, "Messages are there...", Toast.LENGTH_SHORT).show();
                     ChatMessage MSG;
                     if(cursor.getString(2).equals(senderUserID)){
-                        MSG= new ChatMessage(cursor.getString(3), cursor.getLong(4),true,grpName, cursor.getString(2),null,senderUserName);
+                        MSG= new ChatMessage(cursor.getString(3), cursor.getLong(4),true,grpName, cursor.getString(2),senderUserName);
                     }
                     else{
-                        MSG= new ChatMessage(cursor.getString(3), cursor.getLong(4),false,grpName, cursor.getString(2),null,cursor.getString(5));
+                        MSG= new ChatMessage(cursor.getString(3), cursor.getLong(4),false,grpName, cursor.getString(2),cursor.getString(5));
                     }
                     chatMessages.add(MSG);
                     id_array.add(cursor.getString(0));

@@ -14,26 +14,26 @@ public class ChatMessage implements Serializable {
     private long timestamp;
     private boolean isSent;  // True if the message is sent, false if received
     private String grp;
-    private String destination;
+//    private String destination;
     private String userName;
 
-    public ChatMessage(String text, long timestamp, boolean isSent, String grpName,String userId,String destination,String userName) {
+    public ChatMessage(String text, long timestamp, boolean isSent, String grpName,String userId,String userName) {
         this.userId=userId;
         this.text = text;
         this.timestamp = timestamp;
         this.isSent = isSent;
         this.grp = grpName;
-        this.destination = destination;
+//        this.destination = destination;
         this.userName=userName;
     }
 
-    public String getDestination(){
-        return destination;
-    }
+//    public String getDestination(){
+//        return destination;
+//    }
 
-    public void setDestination(String destination){
-        this.destination = destination;
-    }
+//    public void setDestination(String destination){
+//        this.destination = destination;
+//    }
     public String getUserId(){return userId;}
 
     public String getText() {

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -56,8 +57,10 @@ public class splashScreen extends AppCompatActivity {
             @Override
             public void run() {
                 Intent intent = null;
+                Log.d("splashscreen",finalSenderUserID);
                 if(finalSenderUserID.equals("Blank")){
                     intent=new Intent(splashScreen.this,registerPage.class);
+
                 }else{
                     intent=new Intent(splashScreen.this,mainPage.class);
                 }

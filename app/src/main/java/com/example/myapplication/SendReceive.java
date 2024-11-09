@@ -30,10 +30,6 @@ public class SendReceive extends Thread {
         }
     }
 
-    public InetAddress getIPaddress(){
-        return socket.getInetAddress();
-    }
-
     @Override
     public void run() {
         byte[] buffer = new byte[1024];

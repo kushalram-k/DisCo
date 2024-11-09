@@ -95,10 +95,10 @@ public class personFragment extends Fragment {
             mainPageholder.mainPage1.connect(position);
 
 
-            String selectedPerson = deviceList.get(position); // Get the clicked item
-            Intent intent = new Intent(getActivity(), chatPage.class);
-            intent.putExtra(GROUP_NAME,selectedPerson);
-            startActivity(intent);
+//            String selectedPerson = deviceList.get(position); // Get the clicked item
+//            Intent intent = new Intent(getActivity(), chatPage.class);
+//            intent.putExtra(GROUP_NAME,selectedPerson);
+//            startActivity(intent);
         });
 
 

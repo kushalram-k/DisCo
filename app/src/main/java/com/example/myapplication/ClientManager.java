@@ -10,8 +10,6 @@ public class ClientManager {
 
     private static ServerTask serverTask;
 
-    public static String deviceName;
-
     // Add a client task for a specific client identified by some unique key (e.g., device address)
     public static void addClientTask(String clientKey, ClientTask clientTask) {
         clientTasks.put(clientKey, clientTask);
