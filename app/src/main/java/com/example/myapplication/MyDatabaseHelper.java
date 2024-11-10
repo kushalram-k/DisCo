@@ -53,9 +53,9 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         cv.put("message_sender_name",sender_name);
         long result=db.insert("ChatMessages",null,cv);
         if(result==-1){
-            Toast.makeText(context, "Sending Message Failed...", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "Sending Message Failed...", Toast.LENGTH_SHORT).show();
         }else{
-            Toast.makeText(context, "Message Sent...", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "Message Sent...", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -67,9 +67,9 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         cv.put("userNameInDB",userName);
         long result=db.insert("forUserId",null,cv);
         if(result==-1){
-            Toast.makeText(context, "Adding userId to DB failed...", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "Adding userId to DB failed...", Toast.LENGTH_SHORT).show();
         }else{
-            Toast.makeText(context, "UserId Added to DB...", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "UserId Added to DB...", Toast.LENGTH_SHORT).show();
         }
     }
 

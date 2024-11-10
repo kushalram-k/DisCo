@@ -107,7 +107,7 @@ public class mainPage extends AppCompatActivity {
             senderUserID=curs.getString(1);
             senderUserName=curs.getString(2);
         }
-        ChatMessage message = new ChatMessage("Emergency Alert! Immediate assistance required. Please respond if you can help.", currentTime,true,"Rescue",senderUserID,senderUserName);
+        ChatMessage message = new ChatMessage("Emergency Alert! Immediate assistance required.", currentTime,false,"Rescue",senderUserID,senderUserName);
         chatPage.Broadcast(message);
     }
 
@@ -142,7 +142,7 @@ public class mainPage extends AppCompatActivity {
 
 
     public void discover() {
-        Toast.makeText(mainPage.this, "Clicked", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mainPage.this, "Clicked", Toast.LENGTH_SHORT).show();
 
         // Check if there are already available peers
         if (!peers.isEmpty()) {
@@ -168,7 +168,7 @@ public class mainPage extends AppCompatActivity {
             mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
-                    Toast.makeText(mainPage.this, "Peer discovery initiated", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(mainPage.this, "Peer discovery initiated", Toast.LENGTH_SHORT).show();
                     // Note: connection will be attempted in `onPeersAvailable()` callback
                 }
 
@@ -253,7 +253,7 @@ public class mainPage extends AppCompatActivity {
             if (!peersList.getDeviceList().equals(peers)) {
                 peers.clear();
                 peers.addAll(peersList.getDeviceList());
-                Toast.makeText(mainPage.this, "Found " + peers.size() + " peers", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mainPage.this, "Found " + peers.size() + " peers", Toast.LENGTH_SHORT).show();
 
                 deviceNameArray = new String[peersList.getDeviceList().size()];
                 deviceArray = new WifiP2pDevice[peersList.getDeviceList().size()];
@@ -267,7 +267,7 @@ public class mainPage extends AppCompatActivity {
                     personFrag.updateDeviceList(deviceNameArray);
                 }
             } else {
-                Toast.makeText(mainPage.this, "No new peers found", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mainPage.this, "No new peers found", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -281,13 +281,13 @@ public class mainPage extends AppCompatActivity {
 
                 if (info.isGroupOwner) {
 
-                    Toast.makeText(mainPage.this, "acting as server", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(mainPage.this, "acting as server", Toast.LENGTH_SHORT).show();
                     serverTask = new ServerTask(handler, (MyApplication) getApplication());
                     ClientManager.setServerTask(serverTask);
                     serverTask.start();
                 } else{
 
-                    Toast.makeText(mainPage.this, "acting as client", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(mainPage.this, "acting as client", Toast.LENGTH_SHORT).show();
                     clientTask = new ClientTask(info.groupOwnerAddress, handler, (MyApplication) getApplication());
                     String clientKey = info.groupOwnerAddress.getHostAddress(); // Use the IP address as the unique key
                     ClientManager.addClientTask(clientKey, clientTask);

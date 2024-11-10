@@ -332,7 +332,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
         Intent intent=getIntent();
         Cursor cursor=myDB2.readAllDate();
         if(cursor.getCount()==0){
-            Toast.makeText(this, "No Messages...", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "No Messages...", Toast.LENGTH_SHORT).show();
         }else{
 
             MyDatabaseHelper myDB=new MyDatabaseHelper(chatPage.this);

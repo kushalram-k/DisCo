@@ -48,11 +48,11 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
 
 
             int state=intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE,-1);
-            if(state==WifiP2pManager.WIFI_P2P_STATE_ENABLED){
-                Toast.makeText(context, "Wifi is on", Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(context, "wifi is off", Toast.LENGTH_SHORT).show();
-            }
+//            if(state==WifiP2pManager.WIFI_P2P_STATE_ENABLED){
+//                Toast.makeText(context, "Wifi is on", Toast.LENGTH_SHORT).show();
+//            }else{
+//                Toast.makeText(context, "wifi is off", Toast.LENGTH_SHORT).show();
+//            }
             // This is the name of your device
 
         }else if(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)){
@@ -75,7 +75,7 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
                 manager.requestConnectionInfo(channel, service.connectionInfoListener); // Request connection info
             } else {
                 // Disconnected
-                Toast.makeText(service, "Disconnected", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(service, "Disconnected", Toast.LENGTH_SHORT).show();
             }
 
         }else if(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)){
