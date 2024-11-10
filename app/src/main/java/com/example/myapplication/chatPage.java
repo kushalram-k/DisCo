@@ -280,7 +280,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
 
 
-    private void Broadcast(ChatMessage message){
+    public static void Broadcast(ChatMessage message){
 
         List<ClientTask> peers = ClientManager.getAll();
 

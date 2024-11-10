@@ -9,6 +9,6 @@
         android:title="Private"
         android:icon="@drawable/person_icon"/>
     <item android:id="@+id/settings"
-        android:title="Settings"
-        android:icon="@drawable/settings_icon"/>
+        android:title="Alert"
+        android:icon="@drawable/alert_icon"/>
 </menu>

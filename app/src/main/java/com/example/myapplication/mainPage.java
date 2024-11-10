@@ -1,9 +1,11 @@
 package com.example.myapplication;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.WifiInfo;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -12,13 +14,11 @@ import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
-import android.util.Log;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -27,11 +27,7 @@ import com.example.myapplication.databinding.ActivityMainPageBinding;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +43,6 @@ public class mainPage extends AppCompatActivity {
     WifiP2pDevice[] deviceArray;
     public ServerTask serverTask;
     ClientTask clientTask;
-    SendReceive sendReceive;
     Handler handler;
     private personFragment personFrag;
 
@@ -55,7 +50,7 @@ public class mainPage extends AppCompatActivity {
 
     private static final int CONNECTION_TIMEOUT = 1000; // 5 seconds timeout
     private int currentDeviceIndex = 0; // To keep track of the current device in the list
-    private Handler connectionHandler = new Handler();
+    private final Handler connectionHandler = new Handler();
     private Runnable timeoutRunnable;
 
 
@@ -69,10 +64,6 @@ public class mainPage extends AppCompatActivity {
 
         // Set the content view to the root of the binding
         setContentView(binding.getRoot());
-//        Toast.makeText(mainPage.this,"mainPage",Toast.LENGTH_SHORT).show();
-//        startService(new Intent(this, Networkservice.class));
-//        Intent serviceIntent = new Intent(this, Networkservice.class);
-//        startService(serviceIntent);
 
         initialWork();
 
@@ -92,15 +83,34 @@ public class mainPage extends AppCompatActivity {
 
                 replaceFragment(personFrag);
             } else if (itemId == R.id.settings) {
-                replaceFragment(new settingsFragment());
+//                replaceFragment(new settingsFragment());
+                triggerSosAlert();
             }
             return true;
         });
     }
 
-    public ServerTask getServerTask() {
-        return serverTask;
+    private void triggerSosAlert() {
+        // Example logic for sending an SOS alert
+        Toast.makeText(this, "SOS Alert Sent!", Toast.LENGTH_SHORT).show();
+        // Implement further logic to broadcast the alert to connected peers
+        long currentTime = System.currentTimeMillis();
+
+        MyDatabaseHelper myDB=new MyDatabaseHelper(mainPage.this);
+        String senderUserID ="";
+        String senderUserName ="";
+        Cursor curs=myDB.readUserIdFromDb();
+        if(curs.getCount()==0){
+            Toast.makeText(mainPage.this, "No userId in DB", Toast.LENGTH_SHORT).show();
+        }else{
+            curs.moveToFirst();
+            senderUserID=curs.getString(1);
+            senderUserName=curs.getString(2);
+        }
+        ChatMessage message = new ChatMessage("Emergency Alert! Immediate assistance required. Please respond if you can help.", currentTime,true,"Rescue",senderUserID,senderUserName);
+        chatPage.Broadcast(message);
     }
+
 
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager=getSupportFragmentManager();
@@ -110,6 +120,9 @@ public class mainPage extends AppCompatActivity {
     }
 
     private void initialWork(){
+
+        Intent intent = new Intent(this, RequestPermissions.class);
+        startActivity(intent);
 
         wifimanager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
@@ -140,6 +153,18 @@ public class mainPage extends AppCompatActivity {
 //            connect();  // Try to connect directly
         } else {
             // Start discovering peers if no devices are in the list
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || !wifimanager.isWifiEnabled()) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                Intent intent = new Intent(this, RequestPermissions.class);
+                startActivity(intent);
+                return;
+            }
             mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
@@ -192,6 +217,18 @@ public class mainPage extends AppCompatActivity {
         // Start the timeout countdown
         connectionHandler.postDelayed(timeoutRunnable, CONNECTION_TIMEOUT);
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED  || !wifimanager.isWifiEnabled()) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Intent intent = new Intent(this, RequestPermissions.class);
+            startActivity(intent);
+            return;
+        }
         mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
