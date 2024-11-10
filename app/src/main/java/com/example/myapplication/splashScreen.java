@@ -69,7 +69,7 @@ public class splashScreen extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        },4000);
+        },2000);
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
