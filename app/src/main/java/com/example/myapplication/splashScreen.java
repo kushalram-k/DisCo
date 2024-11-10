@@ -45,13 +45,15 @@ public class splashScreen extends AppCompatActivity {
         String senderUserID="Blank";
         MyDatabaseHelper myDB=new MyDatabaseHelper(splashScreen.this);
         Cursor curs=myDB.readUserIdFromDb();
+//        curs.moveToFirst();
+//        senderUserID=curs.getString(1);
         if(curs.getCount()==0){
-//            Toast.makeText(splashScreen.this, "No userId in DB", Toast.LENGTH_SHORT).show();
+            Toast.makeText(splashScreen.this, "No userId in DB", Toast.LENGTH_SHORT).show();
         }else{
             curs.moveToFirst();
             senderUserID=curs.getString(1);
         }
-
+        Log.d("splashscreen",senderUserID);
         String finalSenderUserID = senderUserID;
         new Handler().postDelayed(new Runnable() {
             @Override

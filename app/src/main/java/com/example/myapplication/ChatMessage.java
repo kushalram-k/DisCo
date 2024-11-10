@@ -17,6 +17,7 @@ public class ChatMessage implements Serializable {
 //    private String destination;
     private String userName;
 
+
     public ChatMessage(String text, long timestamp, boolean isSent, String grpName,String userId,String userName) {
         this.userId=userId;
         this.text = text;
@@ -50,5 +51,8 @@ public class ChatMessage implements Serializable {
     }
 
     public String getGrpName(){return grp;}
+
+
+    public void setGrpName(String name){this.grp = name;}
     public String getUserName(){return userName;}
 }

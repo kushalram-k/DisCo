@@ -12,6 +12,7 @@ import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
@@ -121,7 +122,11 @@ public class mainPage extends AppCompatActivity {
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+
+//        ClientManager.deviceID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+//        Log.d("ChatPage", "Android ID is " + ClientManager.deviceID);
     }
+
 
     public void discover() {
         Toast.makeText(mainPage.this, "Clicked", Toast.LENGTH_SHORT).show();
@@ -233,19 +238,24 @@ public class mainPage extends AppCompatActivity {
     WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
         @Override
         public void onConnectionInfoAvailable(WifiP2pInfo info) {
-            if (info.groupFormed && info.isGroupOwner) {
+            if (info.groupFormed) {
 
-                Toast.makeText(mainPage.this,"acting as server", Toast.LENGTH_SHORT).show();
-                serverTask = new ServerTask(handler, (MyApplication) getApplication());
-                ClientManager.setServerTask(serverTask);
-                serverTask.start();
-            } else if (info.groupFormed) {
 
-                Toast.makeText(mainPage.this,"acting as client", Toast.LENGTH_SHORT).show();
-                clientTask = new ClientTask(info.groupOwnerAddress,handler,(MyApplication) getApplication());
-                String clientKey = info.groupOwnerAddress.getHostAddress(); // Use the IP address as the unique key
-                ClientManager.addClientTask(clientKey, clientTask);
-                clientTask.start();
+
+                if (info.isGroupOwner) {
+
+                    Toast.makeText(mainPage.this, "acting as server", Toast.LENGTH_SHORT).show();
+                    serverTask = new ServerTask(handler, (MyApplication) getApplication());
+                    ClientManager.setServerTask(serverTask);
+                    serverTask.start();
+                } else{
+
+                    Toast.makeText(mainPage.this, "acting as client", Toast.LENGTH_SHORT).show();
+                    clientTask = new ClientTask(info.groupOwnerAddress, handler, (MyApplication) getApplication());
+                    String clientKey = info.groupOwnerAddress.getHostAddress(); // Use the IP address as the unique key
+                    ClientManager.addClientTask(clientKey, clientTask);
+                    clientTask.start();
+                }
             }
         }
     };

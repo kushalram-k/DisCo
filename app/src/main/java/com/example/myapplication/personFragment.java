@@ -1,10 +1,13 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,11 +97,12 @@ public class personFragment extends Fragment {
         listView.setOnItemClickListener((parent, view1, position, id) -> {
             mainPageholder.mainPage1.connect(position);
 
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                Intent intent = new Intent(getActivity(), chatPage.class);
+                intent.putExtra(GROUP_NAME, deviceList.get(position));
+                startActivity(intent);
+            }, 5000);
 
-//            String selectedPerson = deviceList.get(position); // Get the clicked item
-//            Intent intent = new Intent(getActivity(), chatPage.class);
-//            intent.putExtra(GROUP_NAME,selectedPerson);
-//            startActivity(intent);
         });
 
 

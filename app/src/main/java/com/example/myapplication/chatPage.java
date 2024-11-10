@@ -170,7 +170,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
     private ArrayList<ChatMessage> chatMessages;  // Use ChatMessage instead of String
     //    private Networkservice networkService;  // Add a NetworkService object
     private Handler uihandler;
-//    private String selectedPerson;
+    private String selectedPerson;
 
     //Database changes
     MyDatabaseHelper myDB2;
@@ -189,7 +189,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
         intent=getIntent();
         String grpName = intent.getStringExtra(groupFragment.GROUP_NAME);
-//        selectedPerson = intent.getStringExtra(personFragment.GROUP_NAME);
+        selectedPerson = intent.getStringExtra(personFragment.GROUP_NAME);
 //        uihandler = new Handler();
 
         ((MyApplication) getApplication()).setMessageListener(this);
@@ -250,7 +250,10 @@ public class chatPage extends AppCompatActivity implements MessageListener{
 
                     //send message using Networkservice
                     //networkService.sendMessage(messageText);  // Trigger sendMessage in NetworkService
-//                    if(selectedPerson!=null)sentMessage.setDestination(selectedPerson);
+                    if(selectedPerson!=null){
+                        sentMessage.setGrpName(selectedPerson);
+                        Log.d("chatPage","sending to " + selectedPerson);
+                    }
                     Broadcast(sentMessage);
                 }
 
@@ -300,8 +303,8 @@ public class chatPage extends AppCompatActivity implements MessageListener{
     public void onMessageReceived(final ChatMessage incomingMessage){
         //This method is called when a new message is received
         long currentTime1 = System.currentTimeMillis();
-
-        if (!incomingMessage.getUserId().equals(senderUserID) && incomingMessage.getGrpName().equals(groupName.getText())) {
+        Log.d("chatPage","ClientManager device ID : " + ClientManager.deviceID);
+        if (!incomingMessage.getUserId().equals(senderUserID) && (incomingMessage.getGrpName().equals(groupName.getText()) || incomingMessage.getGrpName().equals(ClientManager.deviceID))) {
 
                 runOnUiThread(() ->{
                     Log.d("chatPage",incomingMessage.getGrpName());
@@ -352,7 +355,7 @@ public class chatPage extends AppCompatActivity implements MessageListener{
                 if (s1.equals(s2)) {
 //                    Toast.makeText(this, "Messages are there...", Toast.LENGTH_SHORT).show();
                     ChatMessage MSG;
-                    if(cursor.getString(2).equals(senderUserID)){
+                   if(cursor.getString(2).equals(senderUserID)){
                         MSG= new ChatMessage(cursor.getString(3), cursor.getLong(4),true,grpName, cursor.getString(2),senderUserName);
                     }
                     else{

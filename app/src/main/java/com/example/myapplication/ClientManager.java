@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class ClientManager {
     private static Map<String, ClientTask> clientTasks = new HashMap<>();
+    public static String deviceID = null;
 
     private static ServerTask serverTask;
 
